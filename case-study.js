@@ -1,4 +1,4 @@
-/* Case study page – load project details + before/after slider */
+/* Project page logic – Handles interactive before/after sliders */
 
 // Before / After image slider
 function initSlider(slider) {
@@ -19,31 +19,37 @@ function initSlider(slider) {
     drag = true;
     moveSlider(e.clientX);
   };
+  
+  // Touch support for mobile devices
+  slider.ontouchstart = function (e) {
+    drag = true;
+    if (e.touches.length > 0) {
+      moveSlider(e.touches[0].clientX);
+    }
+  };
+
   window.addEventListener("mousemove", function (e) {
     if (drag) moveSlider(e.clientX);
   });
+  
+  window.addEventListener("touchmove", function (e) {
+    if (drag && e.touches.length > 0) {
+      moveSlider(e.touches[0].clientX);
+    }
+  });
+
   window.addEventListener("mouseup", function () {
+    drag = false;
+  });
+  
+  window.addEventListener("touchend", function () {
     drag = false;
   });
 }
 
 document.addEventListener("DOMContentLoaded", function () {
   var slider = document.getElementById("before-after");
-  if (!slider) return;
-
-  var id = new URLSearchParams(location.search).get("id");
-  var data = typeof caseData !== 'undefined' ? caseData[id] : null;
-
-  if (!data) {
-    document.getElementById("case-content").innerHTML = "<p>Project not found. <a href='work.html'>Back to Work</a></p>";
-    return;
+  if (slider) {
+    initSlider(slider);
   }
-
-  document.getElementById("case-title").textContent = data.title;
-  document.getElementById("case-desc").textContent = data.desc;
-  document.getElementById("case-category").textContent = data.cat;
-  slider.querySelector(".after-img").src = data.after;
-  slider.querySelector(".before-img").src = data.before;
-
-  initSlider(slider);
 });
